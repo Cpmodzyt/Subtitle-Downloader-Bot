@@ -45,7 +45,7 @@ def help(client,message):
            [InlineKeyboardButton(f"Buy Me A Coffee ☕️", url=f"https://buymeacoffee.com/JayBee.Dev")]]
     reply_markup = InlineKeyboardMarkup(url)
     message.reply_text(reply_to_message_id= message.message_id,text=f"Send me any Movie/Series name and I will -\n"
-    f"__ * Search for it on `Subscene.com`\n"
+    f"__ * Search for it on `baiscope.lk`\n"
     f" * Let you choose your preferable language.\n"
     f" * Download the subtitle, unzip and upload in `.srt/.ass` format__", parse_mode='md', reply_markup=reply_markup)
 
@@ -66,7 +66,7 @@ def search(client, message):
         'l' : ''
     }
 
-    res = requests.post('https://subscene.com/subtitles/searchbytitle', data=data)
+    res = requests.post('https://baiscope.lk/subtitles/searchbytitle', data=data)
     soup = bs(res.text, 'html.parser')
     results = soup.find('div', {'class': 'search-result'}).find_all('div', {'class': 'title'})
     kb = []
@@ -102,7 +102,7 @@ def searchnext(client, callback_query):
         'query' : query,
         'l' : ''
     }
-    res = requests.post('https://subscene.com/subtitles/searchbytitle', data=data)
+    res = requests.post('https://baiscope.lk/subtitles/searchbytitle', data=data)
     soup = bs(res.text, 'html.parser')
     results = soup.find('div', {'class': 'search-result'}).find_all('div', {'class': 'title'})
     kb = []
@@ -139,7 +139,7 @@ def searchprev(client, callback_query):
         'query' : query,
         'l' : ''
     }
-    res = requests.post('https://subscene.com/subtitles/searchbytitle', data=data)
+    res = requests.post('https://baiscope.lk/subtitles/searchbytitle', data=data)
     soup = bs(res.text, 'html.parser')
     results = soup.find('div', {'class': 'search-result'}).find_all('div', {'class': 'title'})
     kb = []
@@ -171,10 +171,7 @@ def searchprev(client, callback_query):
 @app.on_callback_query(filters.regex('LANG'))
 def chooselang(client, callback_query):
     sublink = callback_query.data.split('*')[-1]
-    kb = [[InlineKeyboardButton("English 🇬🇧", callback_data=f'PREL*english*{sublink}')],
-          [InlineKeyboardButton("Bengali 🇧🇩", callback_data=f'PREL*bengali*{sublink}')],
-          [InlineKeyboardButton("Hindi 🇮🇳", callback_data=f'PRE*hindi*{sublink}')],
-          [InlineKeyboardButton("Indonesian 🇮🇩", callback_data=f'PREL*indonesian*{sublink}')]]
+    kb = [[InlineKeyboardButton("English 🇬🇧", callback_data=f'PREL*english*{sublink}')]]
     reply_markup = InlineKeyboardMarkup(kb)
     app.edit_message_text(chat_id=callback_query.message.chat.id,
                           message_id=callback_query.message.message_id,
@@ -188,7 +185,7 @@ def langset(client, callback_query):
     language = callback_query.data.split('*')[-2]
     callback_query.answer(f"Preffered Language : {language.capitalize()}", show_alert=False)
     suburl = callback_query.data.split('*')[-1]
-    url = f'https://subscene.com/subtitles/{suburl}/{language}'
+    url = f'https://baiscope.lk/subtitles/{suburl}/{language}'
     r = requests.get(url)
     soup = bs(r.text, 'html.parser')
     allsubs = soup.find('tbody').find_all('tr')
@@ -234,13 +231,13 @@ def subdetails(client, callback_query):
     subid = callback_query.data.split('*')[-1]
     kb = []
     # getsub
-    url = f'https://subscene.com/subtitles/{suburl}/{language}/{subid}'
+    url = f'https://baiscope.lk/subtitles/{suburl}/{language}/{subid}'
     callback_query.answer(f"Getting sub from : {url}", show_alert=False)
     r = requests.get(url)
     soup = bs(r.text, 'html.parser')
     poster = soup.find('div', {'class': 'poster'}).find('img').attrs['src'].replace('154-', '')
     info = soup.find('div', {'id': 'details'}).find('ul').find_all('li')
-    dload = "https://subscene.com" + soup.find('a', {'id': 'downloadButton'}).attrs['href']
+    dload = "https://baiscope.lk" + soup.find('a', {'id': 'downloadButton'}).attrs['href']
     subdetails = []
     for a in info:
         try:
@@ -309,7 +306,7 @@ def download(client, callback_query):
 def nextres(client, callback_query):
     language = callback_query.data.split('*')[-2]
     suburl = callback_query.data.split('*')[-1]
-    url = f'https://subscene.com/subtitles/{suburl}/{language}'
+    url = f'https://baiscope.lk/subtitles/{suburl}/{language}'
     print(url)
     r = requests.get(url)
     soup = bs(r.text, 'html.parser')
@@ -351,7 +348,7 @@ def nextres(client, callback_query):
 def prevres(client, callback_query):
     language = callback_query.data.split('*')[-2]
     suburl = callback_query.data.split('*')[-1]
-    url = f'https://subscene.com/subtitles/{suburl}/{language}'
+    url = f'https://baiscope.lk/subtitles/{suburl}/{language}'
     r = requests.get(url)
     soup = bs(r.text, 'html.parser')
     allsubs = soup.find('tbody').find_all('tr')
